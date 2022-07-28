@@ -656,7 +656,7 @@
             data.process = function (resolveFunc, rejectFunc) {
                 if (resolveFunc || rejectFunc) {
                     data._processQueue = this._processQueue =
-                        (this._processQueue || getPromise([this])).then(
+                        (this._processQueue || getPromise([this])).pipe(
                             function () {
                                 if (data.errorThrown) {
                                     return $.Deferred()
@@ -664,7 +664,7 @@
                                 }
                                 return getPromise(arguments);
                             }
-                        ).then(resolveFunc, rejectFunc);
+                        ).pipe(resolveFunc, rejectFunc);
                 }
                 return this._processQueue || getPromise([this]);
             };
@@ -949,9 +949,9 @@
                 if (this.options.limitConcurrentUploads > 1) {
                     slot = $.Deferred();
                     this._slots.push(slot);
-                    pipe = slot.then(send);
+                    pipe = slot.pipe(send);
                 } else {
-                    this._sequence = this._sequence.then(send, send);
+                    this._sequence = this._sequence.pipe(send, send);
                     pipe = this._sequence;
                 }
                 // Return the piped Promise object, enhanced with an abort method,
@@ -1144,7 +1144,7 @@
                 $.map(entries, function (entry) {
                     return that._handleFileTreeEntry(entry, path);
                 })
-            ).then(function () {
+            ).pipe(function () {
                 return Array.prototype.concat.apply(
                     [],
                     arguments
@@ -1213,7 +1213,7 @@
             return $.when.apply(
                 $,
                 $.map(fileInput, this._getSingleFileInputFiles)
-            ).then(function () {
+            ).pipe(function () {
                 return Array.prototype.concat.apply(
                     [],
                     arguments
